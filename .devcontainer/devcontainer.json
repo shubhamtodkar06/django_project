@@ -1,0 +1,16 @@
+{
+    "name": "Django Development",
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "settings": {
+      "terminal.integrated.defaultProfile.linux": "/bin/bash"
+    },
+    "portsAttributes": {
+      "8000": {
+        "label": "Django Development Server",
+        "onOpen": "openBrowser"
+      }
+    },
+    "postCreateCommand": "python manage.py migrate"
+  }
