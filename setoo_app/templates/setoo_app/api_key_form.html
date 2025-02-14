@@ -1,0 +1,13 @@
+{% load static %}  </br> <link rel="stylesheet" href="{% static 'setoo_app/style.css' %}">
+
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            <label for="openai_api_key">OpenAI API Key:</label>
+            <input type="text" name="openai_api_key" id="openai_api_key" required>
+            <button type="submit">Submit</button>
+            {% if error_message %}
+                <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
+        </form>
+    </div>

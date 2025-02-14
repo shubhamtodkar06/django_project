@@ -1,0 +1,114 @@
+/* setoo_app/static/setoo_app/style.css */
+
+/* Reset and Box Sizing */
+*,
+*:before,
+*:after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url('https://4kwallpapers.com/images/walls/thumbs_3t/8710.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace; /* Set font here */
+    font-weight: 800; /* Set font-weight here */
+    color: #ffffff; /* Set text color here */
+}
+
+/* Form Container */
+.form-container {
+    background-image: url('https://images.pexels.com/photos/327509/pexels-photo-327509.jpeg?cs=srgb&dl=pexels-pixabay-327509.jpg&fm=jpg');
+    height: 600px;
+    width: 400px;
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 50px 35px;
+    box-sizing: border-box;
+    max-width: 90%; /* Make responsive */
+}
+
+/* Form Styles (Scoped) */
+.form-container * {
+    font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+    text-align: left;
+}
+
+.form-container h1 {
+    font-size: 50px;
+    font-weight: 500;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-container .form-group { /* Style form groups (label and input) */
+    margin-bottom: 15px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-container input.form-control { /* Scope and specify input type */
+    display: block;
+    height: 50px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: 300;
+    box-sizing: border-box;
+}
+
+.form-container ::placeholder {
+    color: #e5e5e5;
+}
+
+/* Button Styles (Scoped) */
+.form-container .glow-on-hover {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 500;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #111;
+    background: black;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    /* ... (rest of the glow-on-hover styles) ... */
+    margin-top: 10px;
+}
+
+.form-container .glow-on-hover:before { /* ... */ }
+.form-container .glow-on-hover:active { /* ... */ }
+.form-container .glow-on-hover:active:after { /* ... */ }
+.form-container .glow-on-hover:hover:before { /* ... */ }
+.form-container .glow-on-hover:after { /* ... */ }
+
+/* Paragraph Styles (Scoped) */
+.form-container p.error-message {
+    font-size: 12px;
+    color: red;
+    margin-top: 5px;
+}

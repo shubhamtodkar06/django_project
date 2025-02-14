@@ -1,0 +1,64 @@
+<h1>Manage Files</h1>
+
+<h2>JDs</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="jd_file" required>
+    <button type="submit" name="add_jd">Add JD</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for jd in jds %}
+        <tr>
+            <td>{{ jd.original_filename }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="jd_to_delete" value="{{ jd.id }}">
+                    <button type="submit" name="delete_jd">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Resumes</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="resume_files" multiple required>
+    <button type="submit" name="add_resumes">Add Resumes</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for resume in resumes %}
+        <tr>
+            <td>{{ resume.original_filename }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="resume_to_delete" value="{{ resume.id }}">
+                    <button type="submit" name="delete_resume">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if error_message %}  <p style="color: red;">{{ error_message }}</p>
+{% endif %}
