@@ -1,0 +1,63 @@
+<h1>Top Resumes</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="role">Select Role:</label>
+    <select name="role" id="role">
+        {% for role in available_roles %}
+            <option value="{{ role }}">{{ role }}</option>
+        {% endfor %}
+    </select>
+    <label for="count">Count:</label>
+    <input type="number" name="count" id="count" value="5" min="1">
+    <button type="submit">Show Top Resumes</button>
+</form>
+
+{% if role_name %}
+    <h2>Top Resumes for {{ role_name }}</h2>
+    {% if top_resumes %}
+        <ol>
+            {% for resume in top_resumes %}
+                <li>
+                    {% if resume.resume.drive_file_id %} <a href="{% url 'display_pdf' resume.resume.drive_file_id %}"> {% endif %}
+                     {{ resume.resume.original_filename }}
+                    {% if resume.resume.drive_file_id %} </a> {% endif %}
+                    (Similarity: {{ resume.similarity_score }})
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No resumes matched this role.</p>
+    {% endif %}
+{% endif %}
+
+<a href="{% url 'analysis_results', results_id=results_id %}">Back to Analysis Results</a>  ```
+
+**Key Changes and Explanations:**
+
+1.  **Corrected Resume Data Access:** The most important change is how you access the resume information.  In your `display_top_resumes` view, you're passing a list of dictionaries, where each dictionary has a `resume` key containing the resume object.  Therefore, in your template, you need to access the resume's `drive_file_id` and `original_filename` like this:
+
+    ```html
+    {{ resume.resume.drive_file_id }}  {{ resume.resume.original_filename }}  ```
+
+2.  **Added `results_id` to "Back to Analysis Results" link:**  The "Back to Analysis Results" link now includes the `results_id` so that it redirects to the correct analysis results page:
+
+    ```html
+    <a href="{% url 'analysis_results' results_id=results_id %}">Back to Analysis Results</a>
+    ```
+
+    You'll need to pass `results_id` to the `display_top_resumes` view in your `views.py` file and add it to the context when rendering the template.
+
+**Updated `display_top_resumes` view:**
+
+```python
+def display_top_resumes(request, results_id): # Add results_id parameter
+    # ... (rest of the view)
+
+    context = {
+        'role_name': role_name,
+        'top_resumes': top_resumes_to_display,
+        'available_roles': available_roles,
+        'results_id': results_id, # Add results_id to the context
+    }
+    return render(request, 'setoo_app/top_resumes.html', context)

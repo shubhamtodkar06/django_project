@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "setoo_app"
+    "setoo_app",
+    "mathfilters"
 ]
 
 MIDDLEWARE = [
@@ -85,10 +86,14 @@ DATABASES = {
     }
 }
 
+# settings.py
 
+# ... other settings ...
 
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+GOOGLE_DRIVE_CREDENTIALS_FILE = os.path.join(BASE_DIR, r'service_account_credentials.json')
+GOOGLE_DRIVE_SCOPES = ['https://www.googleapis.com/auth/drive']  # <-- ADD THIS LINE
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_PASSWORD_VALIDATORS = [
     {

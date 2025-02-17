@@ -1,64 +1,281 @@
-<h1>Manage Files</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Files - Recruitment Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f9;
+            color: #333;
+        }
 
-<h2>JDs</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="jd_file" required>
-    <button type="submit" name="add_jd">Add JD</button>
-</form>
+        h1, h2, h3 {
+            color: #0056b3;
+        }
 
-<table>
-    <thead>
-        <tr>
-            <th>Filename</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for jd in jds %}
-        <tr>
-            <td>{{ jd.original_filename }}</td>
-            <td>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="jd_to_delete" value="{{ jd.id }}">
-                    <button type="submit" name="delete_jd">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
-<h2>Resumes</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="resume_files" multiple required>
-    <button type="submit" name="add_resumes">Add Resumes</button>
-</form>
+        .messages {
+            margin-bottom: 15px;
+        }
 
-<table>
-    <thead>
-        <tr>
-            <th>Filename</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for resume in resumes %}
-        <tr>
-            <td>{{ resume.original_filename }}</td>
-            <td>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="resume_to_delete" value="{{ resume.id }}">
-                    <button type="submit" name="delete_resume">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        .messages ul {
+            padding: 0;
+            list-style: none;
+        }
 
-{% if error_message %}  <p style="color: red;">{{ error_message }}</p>
-{% endif %}
+        .messages li {
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        form {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        form h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input[type="file"],
+        form input[type="text"],
+        form button,
+        form select {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Important for padding and border to be inside the element's total width */
+            width: 100%; /* Make inputs take full width of their container */
+            max-width: 100%; /* Prevent inputs from becoming too wide */
+        }
+
+        form button.upload-button,
+        form button.process-button,
+        form button.delete-button,
+        form button.edit-button,
+        form button.api-key-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button.upload-button:hover,
+        form button.process-button:hover,
+        form button.delete-button:hover,
+        form button.edit-button:hover,
+        form button.api-key-button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+
+        .file-list {
+            margin-bottom: 20px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+            justify-content: flex-start; /* Align buttons to the start */
+            margin-top: 5px;
+        }
+
+        .file-actions button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: none;
+            background-color: #6c757d; /* Grey color for action buttons */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.9em; /* Slightly smaller font */
+        }
+
+        .file-actions button:hover {
+            background-color: #5a6268;
+        }
+
+        .api-key-form {
+            max-width: 500px;
+            margin: 20px auto; /* Center the API key form */
+        }
+
+        .api-key-form button {
+            width: auto; /* Adjust button width to content */
+            display: inline-block; /* Allow button to be inline if needed */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Files</h1>
+
+        <div class="messages">
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <form method="post" class="api-key-form">
+            {% csrf_token %}
+            <h3>Set OpenAI API Key</h3>
+            <label for="openai_api_key">OpenAI API Key:</label>
+            <input type="text" id="openai_api_key" name="openai_api_key" required>
+            <button type="submit" name="set_api_key" class="api-key-button">Save API Key</button>
+        </form>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>Upload Job Description</h3>
+            <label for="jd_file">Job Description File:</label>
+            <input type="file" name="jd_file" id="jd_file" required>
+            <button type="submit" name="add_jd" class="upload-button">Upload JD</button>
+        </form>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>Upload Resumes</h3>
+            <label for="resume_files">Resume Files:</label>
+            <input type="file" name="resume_files" id="resume_files" multiple required>
+            <button type="submit" name="add_resumes" class="upload-button">Upload Resumes</button>
+        </form>
+
+        <div class="file-list">
+            <h2>Job Descriptions</h2>
+            {% if jds %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for jd in jds %}
+                            <tr>
+                                <td>{{ jd.original_filename }}</td>
+                                <td>
+                                    <div class="file-actions">
+                                        <form method="post" style="padding:0; border:none; background-color:transparent;"> {% csrf_token %}
+                                            <input type="hidden" name="jd_to_delete" value="{{ jd.id }}"> <!- Corrected: jd.id -->
+                                            <button type="submit" name="delete_jd" class="delete-button file-actions-button">Delete</button>
+                                        </form>
+                                        <button type="submit" name="edit_jd" class="edit-button file-actions-button">Edit (Not Implemented)</button>
+                                        </form>
+                                        -->
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No Job Descriptions uploaded yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="file-list">
+            <h2>Resumes</h2>
+            {% if resumes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resume in resumes %}
+                            <tr>
+                                <td>{{ resume.original_filename }}</td>
+                                <td>
+                                    <div class="file-actions">
+                                        <form method="post" style="padding:0; border:none; background-color:transparent;"> {% csrf_token %}
+                                            <input type="hidden" name="resume_to_delete" value="{{ resume.id }}"> <!- Corrected: resume.id -->
+                                            <button type="submit" name="delete_resume" class="delete-button file-actions-button">Delete</button>
+                                        </form>
+                                        <button type="submit" name="edit_resume" class="edit-button file-actions-button">Edit (Not Implemented)</button>
+                                        </form>
+                                        -->
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No Resumes uploaded yet.</p>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <h3>Process and Analyze Resumes</h3>
+            <button type="submit" name="process_and_analyze" class="process-button">Process Resumes & Analyze</button>
+        </form>
+    </div>
+</body>
+</html>

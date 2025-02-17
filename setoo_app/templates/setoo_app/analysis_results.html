@@ -1,0 +1,134 @@
+{% load mathfilters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recruitment Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Recruitment Analytics</h1>
+
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+
+    {% if not analytics_display_data %}
+        <p>No analytics to display yet.</p>
+    {% else %}
+        <h2>Analytics Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Role</th>
+                    <th>Applied Count</th>
+                    <th>Passed Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role, data in analytics_display_data.items %}
+                    <tr>
+                        <td>{{ role }}</td>
+                        <td>{{ data.applied_count }}</td>
+                        <td>{{ data.passed_count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Applications per Job Role</h2>
+        <canvas id="applicationsChart" width="400" height="200"></canvas> <!- Added width and height to canvas -->
+
+        <h2>Summary Statistics</h2>
+        <p>Total Applications: {{ total_applications }}</p>
+        {% if total_applications > 0 %}
+            <p>Average Pass Rate: {{ total_passed|mul:"100"|div:total_applications|floatformat:2 }}%</p>
+        {% else %}
+            <p>Average Pass Rate: N/A (No applications)</p>
+        {% endif %}
+
+        <script>
+            const ctx = document.getElementById('applicationsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for role in analytics_display_data.keys %}
+                            "{{ role }}" {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    datasets: [{
+                        label: 'Applied',
+                        data: [
+                            {% for data in analytics_display_data.values %}
+                                {{ data.applied_count }} {% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'skyblue'
+                    },
+                    {
+                        label: 'Passed',
+                        data: [
+                            {% for data in analytics_display_data.values %}
+                                {{ data.passed_count }} {% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'forestgreen'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {  <!-  Corrected position of 'plugins' -->
+                        title: {
+                            display: true,
+                            text: 'Applications per Job Role'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Resumes' <!- Added Y-axis label -->
+                            }
+                        },
+                        x: {  <!- Added X-axis label -->
+                            title: {
+                                display: true,
+                                text: 'Job Roles'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+
+    {% if matched_resumes %}
+    <h2>Matched Resumes</h2>
+    <ul>
+        {% for role, matches in matched_resumes.items %} <!- Changed to iterate through roles and matches -->
+            <h3>Role: {{ role }}</h3> <!- Added role heading -->
+            {% for match_data in matches %} <!- Iterate through matches for each role -->
+                <li>Resume: {{ match_data.resume_filename }} - Score: {{ match_data.score|floatformat:2 }} - Explanation: {{ match_data.explanation }}</li> <!- Corrected to display info from match_data -->
+            {% endfor %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if unmatched_resumes %}
+    <h2>Unmatched Resumes</h2>
+    <ul>
+        {% for filename in unmatched_resumes %}
+            <li>{{ filename }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if plot_filename %}  <!- Conditionally display plot if filename exists -->
+        <h2>Analytics Visualization Plot</h2>
+        <img src="{{ MEDIA_URL }}{{ plot_filename }}" alt="Analytics Plot">
+    {% endif %}
+
+</body>
+</html>
